@@ -1,5 +1,4 @@
 ﻿using Data.Contexts;
-using Data.Entities;
 using Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Data.Repositories;
 
-public abstract class BaseRepository<TEntity> where TEntity : class
+public abstract class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
     protected readonly DataContext _context;
     protected readonly DbSet<TEntity> _table;
@@ -21,21 +20,21 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         _table = _context.Set<TEntity>();
     }
 
-    public virtual async Task<RepositoryResult> AddAsync (TEntity entity)
+    public virtual async Task<RepositoryResult> AddAsync(TEntity entity)
     {
         try
         {
             _table.Add(entity);
             await _context.SaveChangesAsync();
-            return new RepositoryResult {Success = true, StatusCode = 200 };
-        } 
+            return new RepositoryResult { Success = true, StatusCode = 200 };
+        }
         catch (Exception ex)
         {
             return new RepositoryResult { Success = false, StatusCode = 500, Error = ex.Message };
         }
     }
 
-    public virtual async Task<RepositoryResult<IEnumerable<TEntity>>> GetAllAsync(TEntity entity)
+    public virtual async Task<RepositoryResult<IEnumerable<TEntity>>> GetAllAsync()
     {
         try
         {
@@ -96,27 +95,6 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         catch (Exception ex)
         {
             return new RepositoryResult { Success = false, StatusCode = 500, Error = ex.Message };
-        }
-    }
-
-
-
-
-}
-
-public class EventRepository(DataContext context) : BaseRepository<EventEntity>(context)
-{
-    public override Task<RepositoryResult<IEnumerable<EventEntity>>> GetAllAsync(EventEntity entity)
-    {
-        try
-        {
-            var entities = await _table.ToListAsync();
-            await _context.SaveChangesAsync();
-            return new RepositoryResult<IEnumerable<TEntity>> { Success = true, StatusCode = 200, Result = entities };
-        }
-        catch (Exception ex)
-        {
-            return new RepositoryResult<IEnumerable<TEntity>> { Success = false, StatusCode = 500, Error = ex.Message };
         }
     }
 }
