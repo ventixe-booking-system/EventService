@@ -12,7 +12,10 @@ public class EventRepository(DataContext context) : BaseRepository<EventEntity>(
     {
         try
         {
-            var entities = await _table.Include(x => x.Packages).ToListAsync();
+            var entities = await _table
+                .Include(x => x.Packages)
+                .ThenInclude(p => p.Package)
+                .ToListAsync();
             await _context.SaveChangesAsync();
             return new RepositoryResult<IEnumerable<EventEntity>> { Success = true, StatusCode = 200, Result = entities };
         }
@@ -26,7 +29,10 @@ public class EventRepository(DataContext context) : BaseRepository<EventEntity>(
     {
         try
         {
-            var entity = await _table.Include(x => x.Packages).FirstOrDefaultAsync(expression) ?? throw new Exception("Not Found.");
+            var entity = await _table
+                .Include(x => x.Packages)
+                .ThenInclude(p => p.Package)
+                .FirstOrDefaultAsync(expression) ?? throw new Exception("Not Found.");
             return new RepositoryResult<EventEntity?> { Success = true, StatusCode = 200, Result = entity };
         }
         catch (Exception ex)

@@ -13,4 +13,5 @@ public class CreateEventRequest
     public DateTime EventDate { get; set; }
     public string? Location { get; set; } = null!;
     public string? Description { get; set; }
+    public List<CreatePackageRequest> Packages { get; set; } = [];
 }

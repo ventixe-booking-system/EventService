@@ -44,7 +44,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.EventPackageEntity", b =>
@@ -65,7 +65,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PackageId");
 
-                    b.ToTable("EventPackages");
+                    b.ToTable("EventPackages", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.PackageEntity", b =>
@@ -94,7 +94,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Packages");
+                    b.ToTable("Packages", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.EventPackageEntity", b =>

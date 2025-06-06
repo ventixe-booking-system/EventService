@@ -16,6 +16,7 @@ public class EventService(IEventRepository eventRepository) : IEventService
     {
         try
         {
+
             var eventEntity = new EventEntity
             {
                 Image = request.Image,
@@ -24,6 +25,26 @@ public class EventService(IEventRepository eventRepository) : IEventService
                 Location = request.Location,
                 EventDate = request.EventDate
             };
+
+            foreach (var packageModel in request.Packages)
+            {
+                var packageEntity = new PackageEntity
+                {
+                    Title = packageModel.Title,
+                    SeatingType = packageModel.SeatingType,
+                    Placement = packageModel.Placement,
+                    Price = packageModel.Price,
+                    Currency = packageModel.Currency
+                };
+
+                var eventPackage = new EventPackageEntity
+                {
+                    Event = eventEntity,
+                    Package = packageEntity
+                };
+
+                eventEntity.Packages.Add(eventPackage);
+            }
 
             var result = await _eventRepository.AddAsync(eventEntity);
             return result.Success
@@ -46,7 +67,16 @@ public class EventService(IEventRepository eventRepository) : IEventService
             Title = x.Title,
             Description = x.Description,
             Location = x.Location,
-            EventDate = x.EventDate
+            EventDate = x.EventDate,
+            Packages = x.Packages.Select(p => new Package
+            {
+                Id = p.Package.Id,
+                Title = p.Package.Title,
+                Price = p.Package.Price,
+                SeatingType = p.Package.SeatingType,
+                Placement = p.Package.Placement,
+                Currency = p.Package.Currency,
+            }).ToList()
         });
 
         return new EventResult<IEnumerable<Event>> { Success = true, StatusCode = 200, Result = events };
@@ -64,7 +94,16 @@ public class EventService(IEventRepository eventRepository) : IEventService
                 Title = result.Result.Title,
                 Description = result.Result.Description,
                 Location = result.Result.Location,
-                EventDate = result.Result.EventDate
+                EventDate = result.Result.EventDate,
+                Packages = result.Result.Packages.Select(p => new Package
+                {
+                    Id = p.Package.Id,
+                    Title = p.Package.Title,
+                    Price = p.Package.Price,
+                    SeatingType= p.Package.SeatingType,
+                    Placement = p.Package.Placement,
+                    Currency = p.Package.Currency
+                }).ToList()
             };
 
             return new EventResult<Event?> { Success = true, StatusCode = 200, Result = currentEvent };
